@@ -1,0 +1,26 @@
+{% set name = "KATULU" %}
+{% set version = "1.0" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  git_rev: 
+  git_url: https://github.com/victorgcb1987/KATULU.git
+
+requirements:
+  build:
+    - pip
+    - python
+
+  run:
+    - python
+
+test:
+  imports:
+    - KATULU
+
+about:
+  home:
+  license: MIT
