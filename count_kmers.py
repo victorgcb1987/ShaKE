@@ -7,7 +7,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from src.kmc import count_kmers, create_input_file
+from src.kmc import (count_kmers, create_input_file, create_kmer_histogram, 
+                     calculate_cutoffs, dump_kmer_counts, get_hetkmers)
 from src.utils import check_run
 
 
@@ -69,6 +70,7 @@ def main():
     log_fname = arguments["output"] / logdate
     if not arguments["output"].exists():
         arguments["output"].mkdir(exist_ok=True, parents=True)
+        
     with open(log_fname, "w") as log_fhand:
         log_fhand.write("#Command Used: "+ "".join(sys.argv)+"\n")
         for name, input_files in arguments["inputs"].items():
@@ -76,10 +78,16 @@ def main():
                                                 arguments["output"])
             results = count_kmers(input_file_path, name, 
                                   arguments["output"], kmer_size=21, 
-                                  threads=6, max_ram=6, min_occurrence=1, 
-                                  max_occurrence=1000)
+                                  threads=40, max_ram=64)
             log_fhand.write(check_run(results)+"\n")
-        
+            results = create_kmer_histogram(results["out_fpath"], name)
+            log_fhand.write(check_run(results)+"\n")
+            lower_bound, upper_bound = calculate_cutoffs(results["out_fpath"])
+            results = dump_kmer_counts(Path(arguments["output"]), name, threads=40, 
+                                       lower_bound=lower_bound, upper_bound=upper_bound)
+            log_fhand.write(check_run(results)+"\n")
+            results = get_hetkmers(Path(results["out_fpath"]), name)
+            log_fhand.write(check_run(results)+"\n")
             exit()
     # counts = count_kmers(arguments)
     # with open(log_fname, "w") as log_fhand:
