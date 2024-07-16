@@ -70,4 +70,27 @@ def calculate_sample_kmer_specifity(dataframe):
     dataframe.insert(dataframe.columns.get_loc("Sample_Diversity")+1, 
                      "Sample_Specifity", specifity["_Sample"])
     return dataframe
-    
+
+def get_kmer_counts_dataframe(filepath, hetkmers=""):
+    name = str(filepath.stem).split("_")[0]
+    count_colname = "{}_kmer_count".format(name)
+    df = pd.read_csv(filepath, delimiter="\t", names=["kmer", "COUNT"])
+    if hetkmers:
+         for hetkmer in hetkmers:
+              df = df.replace(hetkmer[1], hetkmer[0])
+         df = df.groupby(["kmer"]).COUNT.sum().reset_index()
+    df.columns = ["kmer", count_colname]
+    df = df.sort_values(by=["{}_kmer_count".format(name)], ascending=False)
+    return df
+
+
+def rename_dataframe(dataframe):
+    index_ = {}
+    for kmer in enumerate(dataframe["kmer"]):
+        k = "k{}".format(kmer[0]+1)
+        index_[k] = kmer[1]
+        dataframe = dataframe.replace(kmer[1], k)
+    return dataframe, index_
+
+
+

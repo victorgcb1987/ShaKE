@@ -9,15 +9,19 @@ def create_input_file(fpaths, name, output_fpath):
     return filepats_fpath
 
 
-def count_kmers(input_file, name, output_dir, kmer_size=21, 
+def count_kmers(input_file, name, output_dir, kind, kmer_size=21, 
                 threads=6, max_ram=6, min_occurrence=1, 
                 max_occurrence=999999):
     temp_dir = output_dir/"tmp"
     if not temp_dir.exists():
         temp_dir.mkdir(parents=True)
     out_db_fpath = output_dir / name
-
-    cmd = "kmc -k{} -t{} -m{} -ci{} -cs{} @{} {} {}"
+    cmd = "kmc "
+    if kind == "fasta":
+        cmd += "-fm "
+    elif kind == "fastq":
+        cmd += "-fq "
+    cmd += "-k{} -t{} -m{} -ci{} -cs{} @{} {} {}"
     cmd = cmd.format(kmer_size, threads, max_ram, 
                      min_occurrence, max_occurrence, str(input_file),
                     str(out_db_fpath), str(temp_dir))
@@ -61,11 +65,10 @@ def dump_kmer_counts(db_fpath, name, threads=6, lower_bound=1, upper_bound=99999
     return results
 
 
-def get_hetkmers(dump_fpath, name):
-    out_fpath = dump_fpath.parent / dump_fpath.name
+def calculate_hetkmers(dump_fpath, out_fpath):
     cmd = "smudgeplot.py hetkmers -o {} < {}"
-    cmd = cmd.format(dump_fpath.stem, dump_fpath)
+    cmd = cmd.format(out_fpath, dump_fpath)
     run_ = run(cmd, shell=True, capture_output=True)
-    results = {"command": cmd, "returncode": run_.returncode, "name": name,
+    results = {"command": cmd, "returncode": run_.returncode,
                "msg": run_.stderr.decode(), "out_fpath": out_fpath}
     return results

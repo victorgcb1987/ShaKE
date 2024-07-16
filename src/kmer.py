@@ -6,7 +6,6 @@ from pathlib import Path
 from shutil import rmtree as remove_dir
 
 
-
 ###Operation for getting kmers from paired end reads
 '''meryl union-sum [count k=21 SRA_R1.fastq.gz output SRA_R1.count] 
     [count k=21 SRA_R2.fastq.gz output SRA_R2.count]  
@@ -57,11 +56,14 @@ def count_kmers(arguments):
     return results
 
 
-def get_kmer_counts_dataframe(meryl_dir):
-     name = Path(meryl_dir).stem
-     cmd = "meryl print -Q {}".format(meryl_dir)
-     results = run(cmd, shell=True, capture_output=True)
-     data = StringIO(results.stdout.decode())
-     df = pd.read_csv(data, delimiter="\t", names=["kmer", "{}_kmer_count".format(name)])
-     df = df.sort_values(by=["{}_kmer_count".format(name)], ascending=False).head(3)
-     return df
+def get_kmer_counts_dataframe(filepath, hetkmers=""):
+    name = str(filepath.stem).split("_")[0]
+    count_colname = "{}_kmer_count".format(name)
+    df = pd.read_csv(filepath, delimiter="\t", names=["kmer", "COUNT"])
+    if hetkmers:
+         for hetkmer in hetkmers:
+              df = df.replace(hetkmer[1], hetkmer[0])
+         df = df.groupby(["kmer"]).COUNT.sum().reset_index()
+    df.columns = ["kmer", count_colname]
+    df = df.sort_values(by=["{}_kmer_count".format(name)], ascending=False)
+    return df
