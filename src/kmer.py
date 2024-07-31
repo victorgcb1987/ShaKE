@@ -5,6 +5,8 @@ from subprocess import run
 from pathlib import Path
 from shutil import rmtree as remove_dir
 
+from src.utils import reformat_lines
+
 
 ###Operation for getting kmers from paired end reads
 '''meryl union-sum [count k=21 SRA_R1.fastq.gz output SRA_R1.count] 
@@ -56,14 +58,15 @@ def count_kmers(arguments):
     return results
 
 
-def get_kmer_counts_dataframe(filepath, hetkmers=""):
-    name = str(filepath.stem).split("_")[0]
+def get_kmer_counts_dataframe(filepath, hetkmers={}):
+    name = str(filepath.stem).split(".")[0]
     count_colname = "{}_kmer_count".format(name)
-    df = pd.read_csv(filepath, delimiter="\t", names=["kmer", "COUNT"])
-    if hetkmers:
-         for hetkmer in hetkmers:
-              df = df.replace(hetkmer[1], hetkmer[0])
-         df = df.groupby(["kmer"]).COUNT.sum().reset_index()
+    with open(filepath) as filehand:
+         lines = [[line.split()[0], int(line.rstrip().split()[1])] for line in filehand]
+    lines = reformat_lines(lines, hetkmers=hetkmers)
+    io = StringIO("\n".join(lines)) 
+    df = pd.read_csv(io, delimiter="\t", names=["kmer", "COUNT"])
+    df = df.groupby(["kmer"]).COUNT.sum().reset_index()
     df.columns = ["kmer", count_colname]
     df = df.sort_values(by=["{}_kmer_count".format(name)], ascending=False)
     return df

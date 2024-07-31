@@ -85,11 +85,10 @@ def get_kmer_counts_dataframe(filepath, hetkmers=""):
 
 
 def rename_dataframe(dataframe):
-    index_ = {}
-    for kmer in enumerate(dataframe["kmer"]):
-        k = "k{}".format(kmer[0]+1)
-        index_[k] = kmer[1]
-        dataframe = dataframe.replace(kmer[1], k)
+    kmers = list(dataframe["kmer"])
+    ks = ["k{}".format(num[0]+1) for num in enumerate(kmers)]
+    index_ = {pair[0]: pair[1] for pair in zip(ks, kmers)}
+    dataframe["kmer"] = ks
     return dataframe, index_
 
 

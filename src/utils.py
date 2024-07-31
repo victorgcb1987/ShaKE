@@ -4,6 +4,9 @@ from subprocess import run
 MAGIC_NUMS_COMPRESSED = [b'\x1f\x8b\x08', b'\x42\x5a\x68', 
                          b'\x50\x4b\x03\x04']
 
+def reformat_lines(kmer_count, hetkmers={}):
+    return ["{}\t{}".format(hetkmers.get(count[0], count[0]), count[1]) for count in kmer_count]
+
 
 def check_run(results):
     if results["returncode"] == 0:
@@ -47,9 +50,20 @@ def sequence_kind(path):
         raise RuntimeError(msg.format(path.name))
     
 
-def concat_dump_files(filepaths, out_filepath):
+def merge_dump_files(filepaths, out_filepath):
     filepaths = [str(filepath) for filepath in filepaths]
     out_filepath = "{}.dump".format(out_filepath)
-    cmd = ["cat"] + filepaths + [">", out_filepath]
-    run(" ".join(cmd), shell=True)
+    cmd = ["cat"] + filepaths 
+    run_ = run(" ".join(cmd), shell=True, capture_output=True)
+    counts = {}
+    for line in run_.stdout.decode().split("\n"):
+        if line:
+            kmer, count = line.rstrip().split()
+            if kmer not in counts:
+                counts[kmer] = int(count)
+            else:
+                counts[kmer] += int(count)
+    with open(out_filepath, "w") as out_fhand:
+        for kmer, count in counts.items():
+            out_fhand.write("{}\t{}\n".format(kmer, count)) 
     return out_filepath
