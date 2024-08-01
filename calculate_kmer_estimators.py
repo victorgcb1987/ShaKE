@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from src.kmer import get_kmer_counts_dataframe
+from src.kmer import group_kmers_counts, index_kmers, calculate_sample_estimators
 from src.dataframes import (merge_kmer_dataframes, calculate_kmer_count_diversity, 
                             calculate_kmer_count_specifity, calculate_sample_kmer_diversity,
                             calculate_sample_kmer_specifity,
@@ -61,30 +61,34 @@ def main():
     else:
         hetkmers = {}
     print("Kmer_counting_"+datetime.now().strftime("%d_%m_%Y-%H_%M_%S"))
-    dataframes = [get_kmer_counts_dataframe(dir, hetkmers=hetkmers) for dir in arguments["inputs"]]
-    print(dataframes)
-    print("Merging_"+datetime.now().strftime("%d_%m_%Y-%H_%M_%S"))
-    if len(dataframes) > 1:
-        dataframe_by_kmer = merge_kmer_dataframes(dataframes)
-    else:
-        dataframe_by_kmer = dataframes[0]
-    print(dataframe_by_kmer)
-    print("Renaming_"+datetime.now().strftime("%d_%m_%Y-%H_%M_%S"))
-    dataframe_by_kmer, index = rename_dataframe(dataframe_by_kmer)
-    dataframe_by_sample = dataframe_by_kmer.T.iloc
-    header =  dataframe_by_sample[0]
-    dataframe_by_sample = dataframe_by_sample[1:]
-    dataframe_by_sample.columns = header
-    print("Diversity_sample_"+datetime.now().strftime("%d_%m_%Y-%H_%M_%S"))
-    calculate_sample_kmer_diversity(dataframe_by_sample)
-    calculate_sample_kmer_specifity(dataframe_by_sample)
-    print("Diversity_kmer_"+datetime.now().strftime("%d_%m_%Y-%H_%M_%S"))
-    calculate_kmer_count_diversity(dataframe_by_kmer)
-    calculate_kmer_count_specifity(dataframe_by_kmer)
-    dataframe_by_sample.to_csv(arguments["output"]/"estimators_by_sample.csv", sep="\t")
-    dataframe_by_kmer.to_csv(arguments["output"]/"estimators_by_kmer.csv", sep="\t")
-    with open(arguments["output"]/"kmer_index.tsv", "w") as index_fhand:
-        for index_, kmer in index.items():
-            index_fhand.write("{}\t{}\n".format(index_, kmer)) 
+    kmer_counts = group_kmers_counts(arguments["inputs"])
+    index, values = index_kmers(kmer_counts)
+    samples_estimators = calculate_sample_estimators(values)
+    print(samples_estimators)
+
+
+    # print("Merging_"+datetime.now().strftime("%d_%m_%Y-%H_%M_%S"))
+    # if len(dataframes) > 1:
+    #     dataframe_by_kmer = merge_kmer_dataframes(dataframes)
+    # else:
+    #     dataframe_by_kmer = dataframes[0]
+    # print(dataframe_by_kmer)
+    # print("Renaming_"+datetime.now().strftime("%d_%m_%Y-%H_%M_%S"))
+    # dataframe_by_kmer, index = rename_dataframe(dataframe_by_kmer)
+    # dataframe_by_sample = dataframe_by_kmer.T.iloc
+    # header =  dataframe_by_sample[0]
+    # dataframe_by_sample = dataframe_by_sample[1:]
+    # dataframe_by_sample.columns = header
+    # print("Diversity_sample_"+datetime.now().strftime("%d_%m_%Y-%H_%M_%S"))
+    # calculate_sample_kmer_diversity(dataframe_by_sample)
+    # calculate_sample_kmer_specifity(dataframe_by_sample)
+    # print("Diversity_kmer_"+datetime.now().strftime("%d_%m_%Y-%H_%M_%S"))
+    # calculate_kmer_count_diversity(dataframe_by_kmer)
+    # calculate_kmer_count_specifity(dataframe_by_kmer)
+    # dataframe_by_sample.to_csv(arguments["output"]/"estimators_by_sample.csv", sep="\t")
+    # dataframe_by_kmer.to_csv(arguments["output"]/"estimators_by_kmer.csv", sep="\t")
+    # with open(arguments["output"]/"kmer_index.tsv", "w") as index_fhand:
+    #     for index_, kmer in index.items():
+    #         index_fhand.write("{}\t{}\n".format(index_, kmer)) 
 if __name__ == "__main__":
     main()

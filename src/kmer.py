@@ -1,6 +1,7 @@
 import pandas as pd
 
 from io import StringIO
+from math import log as ln
 from subprocess import run
 from pathlib import Path
 from shutil import rmtree as remove_dir
@@ -70,3 +71,42 @@ def get_kmer_counts_dataframe(filepath, hetkmers={}):
     df.columns = ["kmer", count_colname]
     df = df.sort_values(by=["{}_kmer_count".format(name)], ascending=False)
     return df
+
+def group_kmers_counts(filepaths, hetkmers={}):
+    kmers_counts = {"header": []}
+    kmer_universe = []
+    sample_values = []
+    for filepath in filepaths:
+          kmers_counts["header"].append(filepath.stem.split(".")[0])
+          with open(filepath) as filehand:
+               values = {val[0]: val[1] for val in {(hetkmers.get(count[0], count[0]), int(count[1])) for count in (count.split() for count in filehand.read().split("\n")) if len(count) == 2}}
+               sample_values.append(values)
+               kmer_universe += list(values.keys())
+    for kmer in set(kmer_universe):
+          kmers_counts[kmer] = [val.get(kmer, 0) for val in sample_values]
+    return kmers_counts
+          
+
+def index_kmers(kmer_counts):
+     n = 0
+     index = []
+     kmers = list(kmer_counts.keys())
+     for kmer in kmers:
+          if kmer == "header":
+               continue
+          n += 1
+          indx = "K{}".format(n)
+          index.append((indx, kmer))
+          kmer_counts[indx] = kmer_counts.pop(kmer)
+     return index, kmer_counts 
+
+
+def calculate_sample_estimators(kmer_counts):
+     sample_diversity = {sample: 0 for sample in kmer_counts["header"]}
+     for pos, samplename in enumerate(kmer_counts["header"]):
+          raw_values = [kmer_counts[kmer][pos] for kmer in kmer_counts.keys() if kmer != "header"]
+          N = sum(raw_values)
+          values = [(float(value)/N) * ln(float(value)/N) if value > 0 else 0 for value in raw_values]
+          diversity_value =  -sum(value for value in values if value != 0)
+          sample_diversity[samplename] = diversity_value
+     return sample_diversity
