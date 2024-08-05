@@ -109,4 +109,37 @@ def calculate_sample_estimators(kmer_counts):
           values = [(float(value)/N) * ln(float(value)/N) if value > 0 else 0 for value in raw_values]
           diversity_value =  -sum(value for value in values if value != 0)
           sample_diversity[samplename] = diversity_value
-     return sample_diversity
+     sample_specifity = {sample: 0 for sample in kmer_counts["header"]}
+     for pos, samplename in enumerate(kmer_counts["header"]):
+          raw_values = [kmer_counts[kmer][pos] for kmer in kmer_counts.keys() if kmer != "header"]
+          N = sum(raw_values)
+          pijs = [abs(float(raw_value/N)) if N > 0 else 0 for raw_value in raw_values]
+          pi = float((1/len(raw_values))) * sum(pijs)
+          values = [(pij/pi) * ln(pij/pi) if pi > 0 and pij > 0 else 0 for pij in pijs]
+          si = (1/len(raw_values)) * sum(values)
+          sample_specifity[samplename] = si
+     return sample_diversity, sample_specifity
+     
+
+def calculate_kmer_estimators(kmer_counts):
+     kmer_diversity = {kmer: 0 for kmer in kmer_counts if kmer != "header"}
+     for kmer, counts in kmer_counts.items():
+          if kmer == "header":
+               continue
+          raw_values = [count for count in counts]
+          N = sum(raw_values)
+          values = [(float(value)/N) * ln(float(value)/N) if value > 0 else 0 for value in raw_values]
+          diversity_value =  -sum(value for value in values if value != 0)
+          kmer_diversity[kmer] = diversity_value
+     kmer_specifity = {kmer: 0 for kmer in kmer_counts if kmer != "header"}
+     for kmer, counts in kmer_counts.items():
+          if kmer == "header":
+               continue
+          raw_values = [count for count in counts]
+          N = sum(raw_values)
+          pijs = [abs(float(raw_value/N)) if N > 0 else 0 for raw_value in raw_values]
+          pi = float((1/len(raw_values))) * sum(pijs)
+          values = [(pij/pi) * ln(pij/pi) if pi > 0 and pij > 0 else 0 for pij in pijs]
+          si = (1/len(raw_values)) * sum(values)
+          kmer_specifity[kmer] = si
+     return kmer_diversity, kmer_specifity

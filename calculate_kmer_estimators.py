@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from src.kmer import group_kmers_counts, index_kmers, calculate_sample_estimators
+from src.kmer import group_kmers_counts, index_kmers, calculate_sample_estimators, calculate_kmer_estimators
 from src.dataframes import (merge_kmer_dataframes, calculate_kmer_count_diversity, 
                             calculate_kmer_count_specifity, calculate_sample_kmer_diversity,
                             calculate_sample_kmer_specifity,
@@ -23,13 +23,16 @@ def parse_arguments():
     parser.add_argument("--input_dir", "-i", type=str,
                         help=help_input, required=True)
     
-    help_hetkmers = "(optional) hetkmers_list"
+    help_hetkmers = "(Optional) hetkmers_list"
     parser.add_argument("--hetkmers", "-k", type=str,
                         help=help_hetkmers, default="")
     
     help_output = "(Required) output dir"
     parser.add_argument("--output", "-o", type=str,
                         help=help_output, required=True)
+    help_output = "(Optional) write kmer_counts_into a file"
+    parser.add_argument("--write_kmers", "-w", action="store_true",
+                        default=False)
     
 
     if len(sys.argv)==1:
@@ -47,7 +50,8 @@ def get_arguments():
         hetkmers_path = False
     return {"inputs": inputs,
             "output": Path(parser.output),
-            "hetkmers": hetkmers_path}
+            "hetkmers": hetkmers_path,
+            "write_kmers": parser.write_kmers}
 
 
 def main():
@@ -63,8 +67,31 @@ def main():
     print("Kmer_counting_"+datetime.now().strftime("%d_%m_%Y-%H_%M_%S"))
     kmer_counts = group_kmers_counts(arguments["inputs"])
     index, values = index_kmers(kmer_counts)
-    samples_estimators = calculate_sample_estimators(values)
-    print(samples_estimators)
+    samples_diversity, samples_especifity = calculate_sample_estimators(values)
+    with open(output_dir/"kmer_index.tsv", "w") as index_fhand:
+        for line in index:
+            index_fhand.write("{}\t{}\n".format(line[0], line[1]))
+    with open(output_dir/"samples_estimators.tsv", "w") as out_fhand:
+        out_fhand.write("Sample\tDiversity\tSpecificity\n")
+        for sample, diversity in samples_diversity.items():
+            out_fhand.write("{}\t{}\t{}\n".format(sample, diversity, samples_especifity[sample]))
+    if arguments["write_kmers"]:
+        with open(output_dir/"kmer_counts.tsv", "w") as kmer_fhand:
+            kmer_fhand.write("Kmer\t{}\n".format("\t".join(kmer_counts["header"])))
+            for kmer, counts in kmer_counts.items():
+                if kmer == "header":
+                    continue
+                else:
+                     print(kmer, counts)
+                     kmer_fhand.write("{}\t{}\n".format(kmer, "\t".join([str(count) for count in counts])))
+    kmer_diversity, kmer_especifity = calculate_kmer_estimators(values)
+    print(kmer_diversity, kmer_especifity)
+    with open(output_dir/"kmer_estimators.tsv", "w") as out_fhand:
+        out_fhand.write("Sample\tDiversity\tSpecificity\n")
+        for sample, diversity in kmer_diversity.items():
+            out_fhand.write("{}\t{}\t{}\n".format(sample, diversity, kmer_especifity[sample]))
+
+    
 
 
     # print("Merging_"+datetime.now().strftime("%d_%m_%Y-%H_%M_%S"))
