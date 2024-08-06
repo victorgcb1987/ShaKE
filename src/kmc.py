@@ -66,9 +66,12 @@ def dump_kmer_counts(db_fpath, name, threads=6, lower_bound=1, upper_bound=99999
 
 
 def calculate_hetkmers(dump_fpath, out_fpath):
+    name = dump_fpath.name
+    out_fname = "{}_hetkmers".format(name)
     cmd = "smudgeplot.py hetkmers -o {} < {}"
-    cmd = cmd.format(out_fpath, dump_fpath)
+    cmd = cmd.format(out_fpath/out_fname, dump_fpath)
     run_ = run(cmd, shell=True, capture_output=True)
+    sequence_file = "{}_sequences.tsv".format(str(out_fname))
     results = {"command": cmd, "returncode": run_.returncode,
-               "msg": run_.stderr.decode(), "out_fpath": out_fpath}
+               "msg": run_.stderr.decode(), "out_fpath": sequence_file}
     return results

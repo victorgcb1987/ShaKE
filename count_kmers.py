@@ -42,7 +42,7 @@ def parse_arguments():
     help_upper_bound = "(Optional) upper occurrence in kmers"
     parser.add_argument("--upper_bound", "-u", type=int,
                         help=help_upper_bound, required=False,
-                        default=1000000)
+                        default=10000000000)
     help_calculate_bounds = "(optional) calculate bounds"
     parser.add_argument("--calculate_bounds", "-c", action="store_true",
                         help=help_calculate_bounds)

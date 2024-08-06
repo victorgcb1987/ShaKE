@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from src.kmc import calculate_hetkmers
-from src.utils import check_run, merge_dump_files
+from src.utils import  merge_hetkmer_files
 
 
 def parse_arguments():
@@ -33,17 +33,14 @@ def get_arguments():
     parser = parse_arguments()
     input_fdir = Path(parser.input_file)
     output_fpath = Path(parser.output_dir)
-
     return {"input_folder": input_fdir,
             "out_fpath": output_fpath}
 
 
 def main():
     arguments = get_arguments()
-    files = [dump_file for dump_file in arguments["input_folder"].glob("*.dump")]
-    merged_dump = merge_dump_files(files, arguments["out_fpath"])
-    results = calculate_hetkmers(merged_dump, arguments["out_fpath"])
-    print(check_run(results))
+    hetkmer_files = [calculate_hetkmers(dump_file, arguments["out_fpath"])["out_fpath"] for dump_file in arguments["input_folder"].glob("*.dump")]
+    merge_hetkmer_files(hetkmer_files, arguments["out_fpath"])
 
 
 if __name__ == "__main__":
