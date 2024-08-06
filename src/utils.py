@@ -68,15 +68,9 @@ def merge_dump_files(filepaths, out_filepath):
             out_fhand.write("{}\t{}\n".format(kmer, count)) 
     return out_filepath
 
+
 def merge_hetkmer_files(filepaths, out_fdir):
-    out_fpath= "hetkmers_sequences_merged.tsv".format(out_fdir)
-    lines = []
-    for filepath in filepaths:
-        with open(filepath) as fhand:
-            for line in fhand:
-                line = line.strip()
-                if line not in lines:
-                    lines.append(line)
-    with open(out_fpath, "w") as out_fhand:
-            out_fhand.write("\n".join(lines))
-            out_fhand.flush()
+    out_fpath = out_fdir / "hetkmers_sequences_merged.tsv"
+    cmd = "sort -u {} > {}".format(" ".join(filepaths), str(out_fpath))
+    print(cmd)
+    run(cmd, shell=True)

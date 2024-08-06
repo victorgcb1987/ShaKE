@@ -70,6 +70,7 @@ def calculate_hetkmers(dump_fpath, out_fpath):
     out_fname = "{}_hetkmers".format(name)
     cmd = "smudgeplot.py hetkmers -o {} < {}"
     cmd = cmd.format(out_fpath/out_fname, dump_fpath)
+    print(cmd)
     run_ = run(cmd, shell=True, capture_output=True)
     sequence_file = "{}_sequences.tsv".format(str(out_fname))
     results = {"command": cmd, "returncode": run_.returncode,
