@@ -92,7 +92,7 @@ def calculate_kmer_estimators(kmer_counts):
 
 def calculate_sample_estimators(filepath, universe_size, estimators):
      with open(filepath) as fhand:
-          raw_values = [int(line.srtrip().split()[1]) for line in fhand if line]
+          raw_values = [int(line.rstrip().split()[1]) for line in fhand if line]
           N = sum(raw_values)
           #diversity
           values = [(float(value)/N) * ln(float(value)/N) if value > 0 else 0 for value in raw_values]
