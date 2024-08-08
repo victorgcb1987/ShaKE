@@ -68,7 +68,10 @@ def main():
     N = arguments["N"]
     for filepath in arguments["inputs"]:
          calculate_sample_estimators(filepath, N, estimators)
-    print(estimators)
+    with open(output_dir/"kmer_estimators.tsv", "w") as out_fhand:
+        out_fhand.write("Sample\tDiversity\tSpecificity\n")
+        for sample, values in estimators.items():
+            out_fhand.write("{}\t{}\t{}\n".format(sample, values["diversity"], values["especifity"]))
 
     # index, values = index_kmers(kmer_counts)
     # samples_diversity, samples_especifity = calculate_sample_estimators(values)
