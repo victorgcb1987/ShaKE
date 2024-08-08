@@ -21,7 +21,7 @@ def count_kmers(input_file, name, output_dir, kind, kmer_size=21,
         cmd += "-fm "
     elif kind == "fastq":
         cmd += "-fq "
-    cmd += "-k{} -t{} -m{} -ci{} -cx{} -cs10000000000 @{} {} {} "
+    cmd += "-k{} -t{} -m{} -sm -ci{} -cx{} -cs10000000000 @{} {} {} "
     cmd = cmd.format(kmer_size, threads, max_ram, 
                      min_occurrence, max_occurrence, str(input_file),
                     str(out_db_fpath), str(temp_dir))

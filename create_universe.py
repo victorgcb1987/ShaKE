@@ -61,7 +61,7 @@ def get_arguments():
         universe_files = []
         for line in input_fhand:
             if line:
-                files = line[1].split(",")
+                files = line.split()[1].split(",")
                 for _file in files:
                     if _file not in universe_files:
                         universe_files.append(_file)
