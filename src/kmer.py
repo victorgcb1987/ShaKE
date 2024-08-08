@@ -2,61 +2,7 @@ import pandas as pd
 
 from io import StringIO
 from math import log as ln
-from subprocess import run
-from pathlib import Path
-from shutil import rmtree as remove_dir
-
 from src.utils import reformat_lines
-
-
-###Operation for getting kmers from paired end reads
-'''meryl union-sum [count k=21 SRA_R1.fastq.gz output SRA_R1.count] 
-    [count k=21 SRA_R2.fastq.gz output SRA_R2.count]  
-    output SRA.union_sum'''
-
-
-def _run_meryl(name, fpaths, kmers_outfpath, kmer_length, keep_intermediate=False):
-    out_fpath = "{}.count".format(str(kmers_outfpath/name))     
-
-
-    if len(fpaths) == 1:
-         fpath = "".join(fpaths)
-         cmd = "meryl count k={} {} output {}".format(kmer_length, 
-                                                      "".join(fpath),
-                                                      out_fpath)
-    else:
-        bin = ["meryl union-sum"]
-        for fpath in fpaths:
-            count = ["[count k={} {} output {}.countpart]".format(kmer_length, 
-                                                                  fpath,
-                                                                  kmers_outfpath/Path(fpath).stem)]
-            bin += count
-
-        bin += ["output", out_fpath]
-
-        cmd = " ".join(bin)
-
-    if Path(out_fpath).exists():
-         results = {"command": cmd, "returncode": 99,
-                    "msg": "Output file already exists", "out_fpath": out_fpath}
-    else:
-        run_ = run(cmd, shell=True, capture_output=True)
-        results = {"command": cmd, "returncode": run_.returncode, "name": name,
-                    "msg": run_.stderr.decode(), "out_fpath": out_fpath}
-    if not keep_intermediate:
-         for intermediate_file in kmers_outfpath.glob("*.countpart"):
-              remove_dir(intermediate_file)
-    
-    return results
-
-
-def count_kmers(arguments):
-    results = {}
-    for name, files in arguments["inputs"].items():
-            out = _run_meryl(name, files, arguments["output"], arguments["kmer_length"], 
-                             keep_intermediate=arguments["keep_intermediate"])
-            results[name] = out
-    return results
 
 
 def get_kmer_counts_dataframe(filepath, hetkmers={}):
@@ -101,24 +47,24 @@ def index_kmers(kmer_counts):
      return index, kmer_counts 
 
 
-def calculate_sample_estimators(kmer_counts):
-     sample_diversity = {sample: 0 for sample in kmer_counts["header"]}
-     for pos, samplename in enumerate(kmer_counts["header"]):
-          raw_values = [kmer_counts[kmer][pos] for kmer in kmer_counts.keys() if kmer != "header"]
-          N = sum(raw_values)
-          values = [(float(value)/N) * ln(float(value)/N) if value > 0 else 0 for value in raw_values]
-          diversity_value =  -sum(value for value in values if value != 0)
-          sample_diversity[samplename] = diversity_value
-     sample_specifity = {sample: 0 for sample in kmer_counts["header"]}
-     for pos, samplename in enumerate(kmer_counts["header"]):
-          raw_values = [kmer_counts[kmer][pos] for kmer in kmer_counts.keys() if kmer != "header"]
-          N = sum(raw_values)
-          pijs = [abs(float(raw_value/N)) if N > 0 else 0 for raw_value in raw_values]
-          pi = float((1/len(raw_values))) * sum(pijs)
-          values = [(pij/pi) * ln(pij/pi) if pi > 0 and pij > 0 else 0 for pij in pijs]
-          si = (1/len(raw_values)) * sum(values)
-          sample_specifity[samplename] = si
-     return sample_diversity, sample_specifity
+# def calculate_sample_estimators(kmer_counts):
+#      sample_diversity = {sample: 0 for sample in kmer_counts["header"]}
+#      for pos, samplename in enumerate(kmer_counts["header"]):
+#           raw_values = [kmer_counts[kmer][pos] for kmer in kmer_counts.keys() if kmer != "header"]
+#           N = sum(raw_values)
+#           values = [(float(value)/N) * ln(float(value)/N) if value > 0 else 0 for value in raw_values]
+#           diversity_value =  -sum(value for value in values if value != 0)
+#           sample_diversity[samplename] = diversity_value
+#      sample_specifity = {sample: 0 for sample in kmer_counts["header"]}
+#      for pos, samplename in enumerate(kmer_counts["header"]):
+#           raw_values = [kmer_counts[kmer][pos] for kmer in kmer_counts.keys() if kmer != "header"]
+#           N = sum(raw_values)
+#           pijs = [abs(float(raw_value/N)) if N > 0 else 0 for raw_value in raw_values]
+#           pi = float((1/len(raw_values))) * sum(pijs)
+#           values = [(pij/pi) * ln(pij/pi) if pi > 0 and pij > 0 else 0 for pij in pijs]
+#           si = (1/len(raw_values)) * sum(values)
+#           sample_specifity[samplename] = si
+#      return sample_diversity, sample_specifity
      
 
 def calculate_kmer_estimators(kmer_counts):
@@ -143,3 +89,17 @@ def calculate_kmer_estimators(kmer_counts):
           si = (1/len(raw_values)) * sum(values)
           kmer_specifity[kmer] = si
      return kmer_diversity, kmer_specifity
+
+def calculate_sample_estimators(filepath, universe_size, estimators):
+     with open(filepath) as fhand:
+          raw_values = [int(line.srtrip().split()[1]) for line in fhand if line]
+          N = sum(raw_values)
+          #diversity
+          values = [(float(value)/N) * ln(float(value)/N) if value > 0 else 0 for value in raw_values]
+          diversity_value =  -sum(value for value in values if value != 0)
+          #especifity
+          pijs = [abs(float(raw_value/N)) if N > 0 else 0 for raw_value in raw_values]
+          pi = float((1/len(raw_values))) * sum(pijs)
+          values = [(pij/pi) * ln(pij/pi) if pi > 0 and pij > 0 else 0 for pij in pijs]
+          especifity = (1/universe_size) * sum(values)
+          estimators[filepath.stem] = {"diversity": diversity_value, "especifity": especifity}
