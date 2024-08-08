@@ -11,7 +11,7 @@ def create_input_file(fpaths, name, output_fpath):
 
 def count_kmers(input_file, name, output_dir, kind, kmer_size=21, 
                 threads=6, max_ram=6, min_occurrence=1, 
-                max_occurrence=999999):
+                max_occurrence=10000000000):
     temp_dir = output_dir/"tmp"
     if not temp_dir.exists():
         temp_dir.mkdir(parents=True)
@@ -21,7 +21,7 @@ def count_kmers(input_file, name, output_dir, kind, kmer_size=21,
         cmd += "-fm "
     elif kind == "fastq":
         cmd += "-fq "
-    cmd += "-k{} -t{} -m{} -ci{} -cs{} @{} {} {}"
+    cmd += "-k{} -t{} -m{} -ci{} -cx{} -cs10000000000 @{} {} {} "
     cmd = cmd.format(kmer_size, threads, max_ram, 
                      min_occurrence, max_occurrence, str(input_file),
                     str(out_db_fpath), str(temp_dir))
@@ -72,7 +72,7 @@ def calculate_hetkmers(dump_fpath, out_fpath):
     cmd = cmd.format(out_fpath/out_fname, dump_fpath)
     print(cmd)
     run_ = run(cmd, shell=True, capture_output=True)
-    sequence_file = dump_fpath.aprent / "{}_sequences.tsv".format(str(out_fname))
+    sequence_file = dump_fpath.parent / "{}_sequences.tsv".format(str(out_fname))
     results = {"command": cmd, "returncode": run_.returncode,
                "msg": run_.stderr.decode(), "out_fpath": str(sequence_file)}
     return results
