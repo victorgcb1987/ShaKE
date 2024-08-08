@@ -61,11 +61,11 @@ def main():
         output_dir.mkdir(exist_ok=True, parents=True)
     if arguments["hetkmers"]:
         with open(arguments["hetkmers"]) as hetkmers_fhand:
-            hetkmers = {kmers.split()[0]: kmers.rstrip().split()[1] for kmers in hetkmers_fhand}
+            hetkmers = {kmers.split()[1]: kmers.rstrip().split()[0] for kmers in hetkmers_fhand}
     else:
         hetkmers = {}
     print("Kmer_counting_"+datetime.now().strftime("%d_%m_%Y-%H_%M_%S"))
-    kmer_counts = group_kmers_counts(arguments["inputs"])
+    kmer_counts = group_kmers_counts(arguments["inputs"], hetkmers=hetkmers)
     index, values = index_kmers(kmer_counts)
     samples_diversity, samples_especifity = calculate_sample_estimators(values)
     with open(output_dir/"kmer_index.tsv", "w") as index_fhand:
@@ -92,7 +92,6 @@ def main():
             out_fhand.write("{}\t{}\t{}\n".format(sample, diversity, kmer_especifity[sample]))
 
     
-
 
     # print("Merging_"+datetime.now().strftime("%d_%m_%Y-%H_%M_%S"))
     # if len(dataframes) > 1:

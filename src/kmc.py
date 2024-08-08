@@ -72,7 +72,7 @@ def calculate_hetkmers(dump_fpath, out_fpath):
     cmd = cmd.format(out_fpath/out_fname, dump_fpath)
     print(cmd)
     run_ = run(cmd, shell=True, capture_output=True)
-    sequence_file = "{}_sequences.tsv".format(str(out_fname))
+    sequence_file = dump_fpath.aprent / "{}_sequences.tsv".format(str(out_fname))
     results = {"command": cmd, "returncode": run_.returncode,
-               "msg": run_.stderr.decode(), "out_fpath": sequence_file}
+               "msg": run_.stderr.decode(), "out_fpath": str(sequence_file)}
     return results
