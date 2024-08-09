@@ -63,9 +63,11 @@ def main():
             groups[representative] += value
         else:
             groups[representative] = value
+        output_fpath = arguments["out_fpath"] / "{}_grouped_by_hetkmers.dump".format(fpath.name.replace(".dump", ""))
+        with open(output_fpath, "w") as out_fhand:
+            for seq, value in groups.items():
+                out_fhand.write(f'{seq}\t{value}\n')        
 
-        for seq, value in groups.items():
-            print(f'{seq}: {value}')        
-
-
+if __name__ == "__main__":
+    main()
 
