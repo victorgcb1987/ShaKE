@@ -40,7 +40,7 @@ def main():
     arguments = get_arguments()
     input_folder = arguments["input_folder"]
     for fpath in input_folder.glob("*.dump"):
-        hetkmer_seqs = input_folder / "{}_hetkmer_sequences.tsv".format(fpath.name)
+        hetkmer_seqs = input_folder / "{}_hetkmers_sequences.tsv".format(fpath.name)
         if not hetkmer_seqs.exists():
             print("hetkmer not found: {}".format(str(hetkmer_seqs)))
         else:
