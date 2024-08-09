@@ -59,10 +59,10 @@ def main():
         groups = {}
         for seq, value in values.items():
             representative = uf.find(seq)
-        if representative in groups:
-            groups[representative] += value
-        else:
-            groups[representative] = value
+            if representative in groups:
+                groups[representative] += value
+            else:
+                groups[representative] = value
         output_fpath = arguments["out_fpath"] / "{}_grouped_by_hetkmers.dump".format(fpath.name.replace(".dump", ""))
         with open(output_fpath, "w") as out_fhand:
             for seq, value in groups.items():
