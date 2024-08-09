@@ -4,6 +4,30 @@ from subprocess import run
 MAGIC_NUMS_COMPRESSED = [b'\x1f\x8b\x08', b'\x42\x5a\x68', 
                          b'\x50\x4b\x03\x04']
 
+class UnionFind:
+    def __init__(self, elementos):
+        self.padre = {elemento: elemento for elemento in elementos}
+        self.rango = {elemento: 0 for elemento in elementos}
+
+    def find(self, elemento):
+        if self.padre[elemento] != elemento:
+            self.padre[elemento] = self.find(self.padre[elemento])
+        return self.padre[elemento]
+
+    def join(self, elemento1, elemento2):
+        raiz1 = self.find(elemento1)
+        raiz2 = self.find(elemento2)
+        
+        if raiz1 != raiz2:
+            if self.rango[raiz1] > self.rango[raiz2]:
+                self.padre[raiz2] = raiz1
+            elif self.rango[raiz1] < self.rango[raiz2]:
+                self.padre[raiz1] = raiz2
+            else:
+                self.padre[raiz2] = raiz1
+                self.rango[raiz1] += 1
+
+
 def reformat_lines(kmer_count, hetkmers={}):
     return ["{}\t{}".format(hetkmers.get(count[0], count[0]), count[1]) for count in kmer_count]
 
