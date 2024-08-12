@@ -28,10 +28,6 @@ class UnionFind:
                 self.rango[raiz1] += 1
 
 
-def reformat_lines(kmer_count, hetkmers={}):
-    return ["{}\t{}".format(hetkmers.get(count[0], count[0]), count[1]) for count in kmer_count]
-
-
 def check_run(results):
     if results["returncode"] == 0:
         return "#SUCCESS: {}".format(results["command"])

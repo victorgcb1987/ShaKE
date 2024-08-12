@@ -16,7 +16,7 @@ def parse_arguments():
     
     
     help_input = "(Required) directory with dumps. dumps should have .dump filename extension"
-    parser.add_argument("--input_file", "-i", type=str,
+    parser.add_argument("--input_dir", "-i", type=str,
                         help=help_input, required=True)
     
     help_output = "(Required) output file"

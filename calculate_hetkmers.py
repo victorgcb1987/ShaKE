@@ -7,8 +7,6 @@ import sys
 from pathlib import Path
 
 from src.kmc import calculate_hetkmers
-from src.utils import  merge_hetkmer_files
-
 
 def parse_arguments():
     desc = "get hetkmers between one or more kmc count dumps"
@@ -40,8 +38,6 @@ def get_arguments():
 def main():
     arguments = get_arguments()
     hetkmer_files = [calculate_hetkmers(dump_file, arguments["out_fpath"])["out_fpath"] for dump_file in arguments["input_folder"].glob("*.dump")]
-    merge_hetkmer_files(hetkmer_files, arguments["out_fpath"])
-
 
 if __name__ == "__main__":
     main()
