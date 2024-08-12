@@ -1,4 +1,4 @@
-from math import log as ln
+from math import log2 as log
 
 
 def index_kmers(kmer_counts):
@@ -21,7 +21,7 @@ def calculate_kmer_estimators(kmer_counts):
                continue
           raw_values = [count for count in counts]
           N = sum(raw_values)
-          values = [(float(value)/N) * ln(float(value)/N) if value > 0 else 0 for value in raw_values]
+          values = [(float(value)/N) * log(float(value)/N) if value > 0 else 0 for value in raw_values]
           diversity_value =  -sum(value for value in values if value != 0)
           kmer_diversity[kmer] = diversity_value
      kmer_specifity = {kmer: 0 for kmer in kmer_counts if kmer != "header"}
@@ -32,7 +32,7 @@ def calculate_kmer_estimators(kmer_counts):
           N = sum(raw_values)
           pijs = [abs(float(raw_value/N)) if N > 0 else 0 for raw_value in raw_values]
           pi = float((1/len(raw_values))) * sum(pijs)
-          values = [(pij/pi) * ln(pij/pi) if pi > 0 and pij > 0 else 0 for pij in pijs]
+          values = [(pij/pi) * log(pij/pi) if pi > 0 and pij > 0 else 0 for pij in pijs]
           si = (1/len(raw_values)) * sum(values)
           kmer_specifity[kmer] = si
      return kmer_diversity, kmer_specifity
@@ -42,11 +42,11 @@ def calculate_sample_estimators(filepath, universe_size, estimators):
           raw_values = [int(line.rstrip().split()[1]) for line in fhand if line]
           N = sum(raw_values)
           #diversity
-          values = [(float(value)/N) * ln(float(value)/N) if value > 0 else 0 for value in raw_values]
+          values = [(float(value)/N) * log(float(value)/N) if value > 0 else 0 for value in raw_values]
           diversity_value =  -sum(value for value in values if value != 0)
           #especifity
           pijs = [abs(float(raw_value/N)) if N > 0 else 0 for raw_value in raw_values]
           pi = float((1/len(raw_values))) * sum(pijs)
-          values = [(pij/pi) * ln(pij/pi) if pi > 0 and pij > 0 else 0 for pij in pijs]
+          values = [(pij/pi) * log(pij/pi) if pi > 0 and pij > 0 else 0 for pij in pijs]
           especifity = (1/universe_size) * sum(values)
           estimators[filepath.stem] = {"diversity": diversity_value, "especifity": especifity}

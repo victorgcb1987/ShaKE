@@ -31,14 +31,14 @@ def parse_arguments():
 
 def get_arguments():
     parser = parse_arguments()
-    input_fdir = Path(parser.input_file)
+    input_fdir = Path(parser.input_dir)
     output_fpath = Path(parser.output_dir)
-    return {"input_folder": input_fdir,
+    return {"input_dir": input_fdir,
             "out_fpath": output_fpath}
 
 def main():
     arguments = get_arguments()
-    input_folder = arguments["input_folder"]
+    input_folder = arguments["input_dir"]
     for fpath in input_folder.glob("*.dump"):
         hetkmer_seqs = input_folder / "{}_hetkmers_sequences.tsv".format(fpath.name)
         if not hetkmer_seqs.exists():
