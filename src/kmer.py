@@ -45,8 +45,8 @@ def calculate_sample_estimators(filepath, universe_size, estimators):
           values = [(float(value)/N) * log(float(value)/N) if value > 0 else 0 for value in raw_values]
           diversity_value =  -sum(value for value in values if value != 0)
           #especifity
-          pijs = [abs(float(raw_value/N)) if N > 0 else 0 for raw_value in raw_values]
-          pi = float((1/len(raw_values))) * sum(pijs)
-          values = [(pij/pi) * log(pij/pi) if pi > 0 and pij > 0 else 0 for pij in pijs]
-          especifity = (1/universe_size) * sum(values)
+          #pijs = [abs(float(raw_value/N)) if N > 0 else 0 for raw_value in raw_values]
+          #pi = float((1/len(raw_values))) * sum(pijs)
+          #values = [(pij/pi) * log(pij/pi) if pi > 0 and pij > 0 else 0 for pij in pijs]
+          especifity = log(universe_size) - diversity_value
           estimators[filepath.stem] = {"diversity": diversity_value, "especifity": especifity}
