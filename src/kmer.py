@@ -1,5 +1,7 @@
 from math import log2 as log
 
+from src.utils import get_kmer_value
+
 
 def index_kmers(kmer_counts):
      n = 0
@@ -48,5 +50,14 @@ def calculate_sample_estimators(filepath, universe_size, estimators):
           #pijs = [abs(float(raw_value/N)) if N > 0 else 0 for raw_value in raw_values]
           #pi = float((1/len(raw_values))) * sum(pijs)
           #values = [(pij/pi) * log(pij/pi) if pi > 0 and pij > 0 else 0 for pij in pijs]
-          especifity = log(universe_size) - diversity_value
-          estimators[filepath.stem] = {"diversity": diversity_value, "especifity": especifity}
+          specifity = log(universe_size) - diversity_value
+          estimators[filepath.stem] = {"diversity": diversity_value, "specifity": especifity}
+
+
+def calculate_kmer_estimators(filepaths, universe_size , kmer):
+     raw_values = [get_kmer_value(filepath, kmer) for filepath in filepaths]
+     N = sum(raw_values)
+     values = [(float(value)/N) * log(float(value)/N) if value > 0 else 0 for value in raw_values]
+     diversity_value =  -sum(value for value in values if value != 0)
+     specifity = log(universe_size) - diversity_value
+     return diversity_value, specifity 

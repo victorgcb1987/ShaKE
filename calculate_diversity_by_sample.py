@@ -52,9 +52,9 @@ def main():
     N = arguments["N"]
     for filepath in arguments["inputs"]:
          calculate_sample_estimators(filepath, N, estimators)
-    with open(output_dir/"kmer_estimators.tsv", "w") as out_fhand:
+    with open(output_dir/"sample_estimators.tsv", "w") as out_fhand:
         out_fhand.write("Sample\tDiversity\tSpecificity\n")
         for sample, values in estimators.items():
-            out_fhand.write("{}\t{}\t{}\n".format(sample, values["diversity"], values["especifity"]))
+            out_fhand.write("{}\t{}\t{}\n".format(sample, values["diversity"], values["specifity"]))
 if __name__ == "__main__":
     main()

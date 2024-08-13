@@ -94,3 +94,19 @@ def merge_hetkmer_files(filepaths, out_fdir):
     cmd = "sort -u {} > {}".format(" ".join(filepaths), str(out_fpath))
     print(cmd)
     run(cmd, shell=True)
+
+def get_kmer_value(filepath, kmer):
+    cmd = "grep -w \"{}\" {} | head -1".format(kmer, str(filepath))
+    value = run(cmd, shell=True, capture_output=True)
+    if not value.stdout:
+        return 0
+    else:
+        return int(value.stdout.decode().rstrip().split()[1])
+    
+def merge_temporary_files(tmp_dir, out_dir, suffix):
+    if suffix == ".estim":
+        out_fpath = out_dir / "kmer_estimators.tsv"
+    if suffix == ".index":
+        out_fpath = out_dir / "kmer_index.tsv"
+    cmd = "ls -v {}/*{}|xargs cat > {}".format(str(tmp_dir), suffix, str(out_fpath))
+    run(cmd, shell=True)
