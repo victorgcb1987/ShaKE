@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
 import argparse
+import multiprocess as mp
 import sys
+from math import log2 as log
 
+
+from itertools import islice
 from pathlib import Path
 from shutil import rmtree as remove_dir
-from src.kmer import calculate_kmer_estimators
-from src.utils import merge_temporary_files
+from src.utils import merge_temporary_files, get_kmer_value
 
 
 def parse_arguments():
@@ -26,6 +29,9 @@ def parse_arguments():
     help_output = "(Required) Dump file with universe of kmers"
     parser.add_argument("--universe", "-u", required=True,
                         type=str)
+    help_threads = "(Optional) number of threads. 6 by default"
+    parser.add_argument("--threads", "-t", default=6,
+                       type=int)
 
     if len(sys.argv)==1:
         parser.print_help()
@@ -39,7 +45,26 @@ def get_arguments():
     return {"inputs": inputs,
             "output": Path(parser.output),
             "universe": Path(parser.universe),
-            "N": len(inputs)}
+            "N": len(inputs),
+            "threads": parser.threads}
+
+
+def chunk_processing(generator, chunk_size):
+    iterator = iter(generator)
+    while True:
+        chunk = list(islice(iterator, chunk_size))
+        if not chunk:
+            break
+        yield chunk
+
+
+def calculate_kmer_estimators(kmer, filepaths, universe_size):
+     raw_values = [get_kmer_value(filepath, kmer) for filepath in filepaths]
+     N = sum(raw_values)
+     values = [(float(value)/N) * log(float(value)/N) if value > 0 else 0 for value in raw_values]
+     diversity_value =  -sum(value for value in values if value != 0)
+     specifity = log(universe_size) - diversity_value
+     return kmer, diversity_value, specifity 
 
 
 def main():
@@ -48,21 +73,24 @@ def main():
     tmp_dir.mkdir(parents=False, exist_ok=True)
     with open(tmp_dir / "Header.estim", "w") as header_fhand:
         header_fhand.write("Kmer\tDiversity\tSpecifity\n")
-    
+    k = 0
     with open(arguments["universe"]) as universe_fhand:
-        k = 0
-        for line in universe_fhand:
-            k += 1
-            kmer = line.split()[0]
-            with open(tmp_dir / "K{}.index".format(k), "w") as index_fhand:
-                index_fhand.write("K{}\t{}\n".format(k, kmer))
-            with open(tmp_dir / "K{}.estim".format(k), "w") as estimator_fhand:
-                diversity, specifity = calculate_kmer_estimators(arguments["inputs"], arguments["N"], kmer)
-                estimator_fhand.write("K{}\t{}\t{}\n".format(k, diversity, specifity))
+        kmer_list = (line.split()[0] for line in universe_fhand)
+        def pack_args(kmer):
+            return calculate_kmer_estimators(kmer, arguments["inputs"], len(arguments["inputs"]))
+        for chunk in chunk_processing(kmer_list, arguments["threads"]):
+            with mp.Pool(processes=arguments["threads"]) as pool:
+                results = pool.map(pack_args, chunk)
+                with open(tmp_dir/"K{}.estim".format(k), "w") as chunk_fhand:
+                    with open(tmp_dir/"K{}.index".format(k), "w") as index_fhand:
+                        for result in results:
+                            k += 1
+                            chunk_fhand.write("K{}\t{}\t{}\n".format(k, result[1], result[2]))
+                            index_fhand.write("K{}\t{}\n".format(k, result[0]))
+
         merge_temporary_files(tmp_dir, arguments["output"], ".estim")
         merge_temporary_files(tmp_dir, arguments["output"], ".index")
         remove_dir(tmp_dir)
-        
 
 if __name__ == "__main__":
     main()
