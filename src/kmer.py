@@ -39,9 +39,13 @@ def calculate_kmer_estimators(kmer_counts):
           kmer_specifity[kmer] = si
      return kmer_diversity, kmer_specifity
 
-def calculate_sample_estimators(filepath, universe_size, estimators):
+
+def calculate_sample_estimators(filepath, universe_size, estimators, group=None, 
+                                sub=None, name=None, file=None, pipe=False, kind=None, binary=False):
      with open(filepath) as fhand:
           raw_values = [int(line.rstrip().split()[1]) for line in fhand if line]
+          if binary:
+               raw_values = [1 if float(value) >= 1 else 0 for value in raw_values]
           N = sum(raw_values)
           #diversity
           values = [(float(value)/N) * log(float(value)/N) if value > 0 else 0 for value in raw_values]
@@ -51,7 +55,18 @@ def calculate_sample_estimators(filepath, universe_size, estimators):
           #pi = float((1/len(raw_values))) * sum(pijs)
           #values = [(pij/pi) * log(pij/pi) if pi > 0 and pij > 0 else 0 for pij in pijs]
           specifity = log(universe_size) - diversity_value
-          estimators[filepath.stem] = {"diversity": diversity_value, "specifity": especifity}
+          results = {"diversity": diversity_value, "specifity": specifity, 
+                     "universe_size": universe_size, "sub": sub,
+                     "name": name, "kind": kind, "file": file}
+          if pipe:
+               if group not in estimators:
+                    estimators[group] = {}
+               if sub not in estimators[group]:
+                    estimators[group][sub] = {name: results}
+               else:
+                    estimators[group][sub][name] = results
+          else:
+               estimators[filepath.stem] = {"diversity": diversity_value, "specifity": specifity}
 
 
 def calculate_kmer_estimators(filepaths, universe_size , kmer):
