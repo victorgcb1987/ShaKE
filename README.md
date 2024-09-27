@@ -31,24 +31,3 @@ Fourth and fifth column are the minimun and the maximum values cutoff in order t
 
 Sixth column is the filepaths column, you can separate different files with a comma.
 
-
-`omics_diversity_pipeline.py [-h] --input_file INPUT_FILE --output_dir OUTPUT_DIR [--ram_usage RAM_USAGE] [--num_threads NUM_THREADS] [--kmer_size KMER_SIZE]
-                                   [--merge_universe] [--presence]
-
-Pipeline to run all steps required
-
-options:
-  -h, --help            show this help message and exit
-  --input_file INPUT_FILE, -i INPUT_FILE
-                        (Required) File of files including kind Name1 R1 genomic KmerLength lower_bound upper_bound file1,file2
-  --output_dir OUTPUT_DIR, -o OUTPUT_DIR
-                        (Required) output dir
-  --ram_usage RAM_USAGE, -r RAM_USAGE
-                        (Optional) Max RAM usage. 6GB by default
-  --num_threads NUM_THREADS, -t NUM_THREADS
-                        (Optional) Number of threads. 1 by default
-  --kmer_size KMER_SIZE, -k KMER_SIZE
-                        (Optional) Kmer size. 21 by default
-  --merge_universe, -m  (Optional) merge universe within a group ignoring subrgroups. False by default
-  --presence, -p        (optional) change diversity calculation to presence/absence`
-
