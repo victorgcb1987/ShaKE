@@ -14,9 +14,8 @@ Omics diversity calculator is a pipeline that will calculate Shannon diversity i
 
 In order to runt this program you will need to prepare a table similar to this one:
 
-
-|---|---|---|---|---|---|
 | onegroup | R | transcriptome | 0 | 9999999999 | /data/users/carpinterov/doctorado/test/test1_r1.fastq.gz,/data/users/carpinterov/doctorado/test/test1_r2.fastq.gz |
+|---|---|---|---|---|---|
 | onegroup | R | transcriptome | 0 | 9999999999 | test2_r1.fastq.gz,test2_r2.fastq.gz |
 | onegroup | G | genome | 0 | 9999999999 | test5.fasta.gz |
 | othergroup | G | transcriptome | 0 | 999999999 | test4_r1.fastq.gz,test4_r2.fastq.gz |
