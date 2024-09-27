@@ -230,7 +230,6 @@ def main():
                             log_fhand.write(log+"\n")
                             log_fhand.flush()
                             print(log)
-        print(steps["count_dumps"])
         msg = "#STEP 4: calculating hetkmers for transcriptomic data\n"
         print(msg)
         log_fhand.write(msg)
