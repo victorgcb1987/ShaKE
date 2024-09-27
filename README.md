@@ -32,11 +32,18 @@ Fourth and fifth column are the minimun and the maximum values cutoff in order t
 Sixth column is the filepaths column, you can separate different files with a comma.
 
 This pipeline can be run with `omics_diversity_pipeline.py`and it accepts the following arguments:
+
   `--input_file INPUT_FILE, -i INPUT_FILE` (Required): the path to the table previously described
+  
   `--output_dir OUTPUT_DIR, -o OUTPUT_DIR`(Required): the path were interemediate files and results will be stored. It will also check in this ouput for steps already done and will skip these steps.
+  
   `--ram_usage RAM_USAGE, -r RAM_USAGE` (Optional, 1 by default): The max memory usage of kmc.
-  `--num_threads NUM_THREADS, -t NUM_THREADS`(Optional 1 by default): Number of threads used by kmc
-  `--kmer_size KMER_SIZE, -k KMER_SIZE` (Optional, 21 by default): the kmer size used by kmc
+  
+  `--num_threads NUM_THREADS, -t NUM_THREADS`(Optional 1 by default): Number of threads used by kmc.
+  
+  `--kmer_size KMER_SIZE, -k KMER_SIZE` (Optional, 21 by default): the kmer size used by kmc.
+  
   `--merge_universe, -m` (Optional, False by default): This switchs whether if the kmer universe size should be calculated from all items from a group (True) or only for each sub group.
+  
   `--presence, -p` (Optional, False by default) switchs change diversity calculation to presence/absence, counting all kmer count values to 1 if is present. For expression tables, a gene will throw a value of 1 if a gene has a TPM of 1 or more or 0 if its less than 1. 
 
