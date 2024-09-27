@@ -23,3 +23,9 @@ In order to runt this program you will need to prepare a table similar to this o
 | othergroup |E | expression | 0 | 000000000  |adult_vascular_leaf.guided.abund.tsv |
 | anothergroup | G  |genome | 0 | 9999999999 | test5.fasta.gz |
 
+The first and second columns are used to label group and subgroup respectively, for example to mark that one tissue in the first column and then a set of files of the same origin/class/etc. with the second column. 
+
+The third column serves to label what kind of data is; you can put whaterver you like but if you use *** transcriptome *** hetkmers will be calculated and kmers and their values will be grouped using this. If you put *** expression ***, files will be treated as expression tables.
+
+Fourth and fifth column are the minimun and the maximum value of kmer counting 
+
