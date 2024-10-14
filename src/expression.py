@@ -1,6 +1,6 @@
 
 from csv import DictReader
-from math import log2 as log
+from math import log10 as log
 
 
 def calculate_sample_estimators(filepath, estimators, units, exclude, binary=False):

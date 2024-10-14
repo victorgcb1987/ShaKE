@@ -3,7 +3,7 @@
 import argparse
 import multiprocess as mp
 import sys
-from math import log2 as log
+from math import log10 as log
 
 
 from itertools import islice

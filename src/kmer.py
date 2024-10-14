@@ -1,4 +1,4 @@
-from math import log2 as log
+from math import log10 as log
 
 from src.utils import get_kmer_value
 
