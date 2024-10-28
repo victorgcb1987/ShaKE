@@ -10,8 +10,9 @@ from subprocess import run
 
 from src.kmc import (count_kmers, create_input_file, create_kmer_histogram, 
                      calculate_cutoffs, dump_kmer_counts, calculate_hetkmers)
-from src.utils import check_run, sequence_kind, UnionFind
-from src.kmer import calculate_sample_estimators
+from src.kolmogorov import calculate_kolmogorov_estimator
+from src.utils import check_run, sequence_kind, UnionFind, get_universe_size
+from src.kmer import calculate_sample_shannon_estimators
 from src.expression import calculate_sample_estimators as expression_diversity
 
 
@@ -84,14 +85,6 @@ def get_arguments():
             "merge_universe": parser.merge_universe,
             "presence": parser.presence}
 
-
-def get_universe_size(fpaths):
-    if len(fpaths) == 1:
-        cmd = "wc -l {}".format(" ".join(fpaths))
-    else:
-        cmd = "cut -f1 {}| sort |uniq|wc -l".format(" ".join(fpaths))
-    results = run(cmd, capture_output=True, shell=True)
-    return int(results.stdout.decode().strip().split()[0])
 
 def get_files_used(output_dir, prefix):
     filename = Path(output_dir/ "{}.files".format(prefix))
@@ -322,21 +315,25 @@ def main():
                             universe_size = universes_sizes[group][sub]
                         else:
                             universe_size = universes_sizes[group]
-                        calculate_sample_estimators(features["file"], universe_size, results, group=group, 
-                                                    sub=sub, name=name, kind=features["kind"], file=features["file"], 
-                                                    pipe=True, binary=arguments["presence"])
+                        calculate_sample_shannon_estimators(features["file"], universe_size, results, group=group, 
+                                                            sub=sub, name=name, kind=features["kind"], file=features["file"], 
+                                                            pipe=True, binary=arguments["presence"])
+                        calculate_kolmogorov_estimator(features["file"], universe_size, results, group=group, 
+                                                       sub=sub, name=name, kind=features["kind"], units="TPM")
+                        
         with open(arguments["output"] / "file_manifiest.tsv", "w") as manifiest_fhand:
             manifiest_fhand.write("Group\tSubgroup\tRep\tKind\"File\n")
             manifiest_fhand.flush()
             with open(arguments["output"] / "results.tsv", "w") as out_fhand:
-                out_fhand.write("Group\tSubgroup\tRep\tKind\tSubgroup_Universe_Size\tDiversity\tSpecifity\n")
+                out_fhand.write("Group\tSubgroup\tRep\tKind\tSubgroup_Universe_Size\tDiversity_log2\tSpecifity_log2\tDiversity_log10\tSpecifity_log10\tKolmogorov\n")
                 for group, values in results.items():
                     for sub, reps in values.items():
                         for rep, features in reps.items():
-                            line = "{}\t{}\t{}\t{}\t{}\t{}\t{}\n"
+                            line = "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n"
                             line = line.format(group, sub, rep, features["kind"], 
-                                            features["universe_size"], features["diversity"],
-                                            features["specifity"])
+                                            features["universe_size"], features["diversity_log2"],
+                                            features["specifity_log2"], features["diversity_log10"],
+                                            features["specifity_log10"], features["kolmogorov"])
                             out_fhand.write(line)
                             out_fhand.flush()
                             files_used = get_files_used(arguments["output"], rep)

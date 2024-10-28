@@ -27,6 +27,14 @@ class UnionFind:
                 self.padre[raiz2] = raiz1
                 self.rango[raiz1] += 1
 
+def get_universe_size(fpaths):
+    if len(fpaths) == 1:
+        cmd = "wc -l {}".format(" ".join(fpaths))
+    else:
+        cmd = "cut -f1 {}| sort |uniq|wc -l".format(" ".join(fpaths))
+    results = run(cmd, capture_output=True, shell=True)
+    return int(results.stdout.decode().strip().split()[0])
+
 
 def check_run(results):
     if results["returncode"] == 0:
