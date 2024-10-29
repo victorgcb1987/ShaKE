@@ -333,6 +333,7 @@ def main():
                         universe_size = universes_sizes[group][sub]
                     else:
                         universe_size = universes_sizes[group]
+                    print(features["file"])
                     calculate_sample_shannon_estimators(features["file"], universe_size, results, group=group, 
                                                         sub=sub, name=name, kind=features["kind"], file=features["file"], 
                                                         pipe=True, binary=arguments["presence"])
