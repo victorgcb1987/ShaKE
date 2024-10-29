@@ -346,7 +346,7 @@ def main():
             for group, values in results.items():
                 for sub, reps in values.items():
                     for rep, features in reps.items():
-                        line = "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n"
+                        line = "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n"
                         line = line.format(group, sub, rep, features["kind"], 
                                             features["universe_size"], features["diversity_log2"],
                                             features["specifity_log2"], features["diversity_log10"],
@@ -370,8 +370,11 @@ def main():
                         rep = "{}_{}{}".format(group, sub,count)
                         values, universe_size = expression_diversity(Path(file), expression_estimators, "TPM", [], 
                                                                         binary=arguments["presence"])
-                        line = "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n"
-                        line = line.format(group, sub, rep, "expression",
+                        calculate_kolmogorov_estimator(features["file"], universe_size, results, group=group, 
+                                                    sub=sub, name=name, kind="expression", units="TPM")
+                        
+                        line = "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n"
+                        line = line.format(group, sub, rep, "expression", universe_size
                                            features["diversity_log2"], features["specifity_log2"], 
                                            features["diversity_log10"], features["specifity_log10"], 
                                            features["kolmogorov"])
