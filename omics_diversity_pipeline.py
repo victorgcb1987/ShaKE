@@ -374,7 +374,7 @@ def main():
                                                     sub=sub, name=name, kind="expression", units="TPM")
                         
                         line = "{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n"
-                        line = line.format(group, sub, rep, "expression", universe_size
+                        line = line.format(group, sub, rep, "expression", universe_size,
                                            features["diversity_log2"], features["specifity_log2"], 
                                            features["diversity_log10"], features["specifity_log10"], 
                                            features["kolmogorov"])
