@@ -323,6 +323,7 @@ def main():
         
     steps["estimators"] = {}
     results = {}
+    print(steps["count_dumps"])
     for group, data in steps["count_dumps"].items():
         if group not in  steps["estimators"]:
             steps["estimators"][group] = {}
