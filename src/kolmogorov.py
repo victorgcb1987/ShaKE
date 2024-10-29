@@ -1,9 +1,10 @@
 import gzip
 import os
-import struct
 
 from csv import DictReader
+from pathlib import Path
 from src.utils import get_universe_size
+from subprocess import run
 
 
 '''BINARY_LENGTH=30(a thousand of millions)!!!!
@@ -30,22 +31,40 @@ def convert_to_binary(number):
     return format(int(number), '030b')
 
 
+# def create_kmer_binary_file(in_filepath, out_filepath, num_zeros):
+#     compressed = "{}.gz".format(out_filepath)
+#     with gzip.open(compressed, 'wb') as compressed_fhand:
+#         with open(out_filepath, "w") as not_compressed_fhand:
+#             with open(in_filepath) as in_fhand:
+#                 generator = (convert_to_binary(line.rstrip().split()[1]) for line in in_fhand)
+#                 for gen in generator:
+#                     compressed_fhand.write(gen.encode()+b"\n")
+#                     compressed_fhand.flush()
+#                     not_compressed_fhand.write(gen+"\n")
+#                     not_compressed_fhand.flush()
+#                 for zero in range(num_zeros):
+#                     compressed_fhand.write(format(0, '030b').encode()+b"\n")
+#                     compressed_fhand.flush()
+#                     not_compressed_fhand.write(format(0, '030b')+"\n")
+#                     not_compressed_fhand.flush()
+#     return compressed
+
+
 def create_kmer_binary_file(in_filepath, out_filepath, num_zeros):
-    compressed = "{}.gz".format(out_filepath)
-    with gzip.open(compressed, 'wb') as compressed_fhand:
+    if not Path(out_filepath).exists():
         with open(out_filepath, "w") as not_compressed_fhand:
             with open(in_filepath) as in_fhand:
                 generator = (convert_to_binary(line.rstrip().split()[1]) for line in in_fhand)
                 for gen in generator:
-                    compressed_fhand.write(gen.encode()+b"\n")
-                    compressed_fhand.flush()
                     not_compressed_fhand.write(gen+"\n")
                     not_compressed_fhand.flush()
                 for zero in range(num_zeros):
-                    compressed_fhand.write(format(0, '030b').encode()+b"\n")
-                    compressed_fhand.flush()
                     not_compressed_fhand.write(format(0, '030b')+"\n")
                     not_compressed_fhand.flush()
+    compressed = "{}.gz".format(out_filepath)
+    if not Path(compressed).exists():
+        cmd = "gzip -c {} > {}"
+        run(cmd, shell=True)
     return compressed
 
 
