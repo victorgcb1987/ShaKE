@@ -1,4 +1,6 @@
+from pathlib import Path
 from subprocess import run
+
 
 
 MAGIC_NUMS_COMPRESSED = [b'\x1f\x8b\x08', b'\x42\x5a\x68', 
@@ -28,6 +30,7 @@ class UnionFind:
                 self.rango[raiz1] += 1
 
 def get_universe_size(fpaths):
+    fpaths = [str(fpath) for fpath in fpaths]
     if len(fpaths) == 1:
         cmd = "wc -l {}".format(" ".join(fpaths))
     else:
@@ -58,6 +61,8 @@ def file_is_compressed(path):
 
 def sequence_kind(path):
     #Checks if sequence file is in fasta or fastq format
+    if str(path).endswith(".bam"):
+        return "bam"
     if file_is_compressed(path):
        cat_command = ["zcat"]
     else:
@@ -103,6 +108,7 @@ def merge_hetkmer_files(filepaths, out_fdir):
     print(cmd)
     run(cmd, shell=True)
 
+
 def get_kmer_value(filepath, kmer):
     cmd = "grep -w \"{}\" {} | head -1".format(kmer, str(filepath))
     value = run(cmd, shell=True, capture_output=True)
@@ -110,7 +116,8 @@ def get_kmer_value(filepath, kmer):
         return 0
     else:
         return int(value.stdout.decode().rstrip().split()[1])
-    
+
+
 def merge_temporary_files(tmp_dir, out_dir, suffix):
     if suffix == ".estim":
         out_fpath = out_dir / "kmer_estimators.tsv"
@@ -118,3 +125,18 @@ def merge_temporary_files(tmp_dir, out_dir, suffix):
         out_fpath = out_dir / "kmer_index.tsv"
     cmd = "ls -v {}/*{}|xargs cat > {}".format(str(tmp_dir), suffix, str(out_fpath))
     run(cmd, shell=True)
+
+
+def convert_bam_to_fasta(bam_fpath, out_fdir, threads=1):
+    fasta_fpath = out_fdir / "{}.fasta.gz".format(bam_fpath.name)
+    cmd = "samtools fasta -F 4 -@ {} -o {} {}".format(str(threads), fasta_fpath, bam_fpath)
+    if fasta_fpath.exists():
+        results = {"command": cmd, "returncode": 99,
+                   "msg": "output file exists already", 
+                   "out_fpath": Path(fasta_fpath)}
+    else:
+        run_ = run(cmd, shell=True, capture_output=True)
+        results = {"command": cmd, "returncode": run_.returncode,
+                   "msg": run_.stderr.decode(), "out_fpath": fasta_fpath}
+    return results
+

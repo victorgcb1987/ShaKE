@@ -6,7 +6,7 @@ def create_input_file(fpaths, name, output_fpath):
     filepats_fpath = output_fpath / "{}.files".format(name)
     with open(filepats_fpath, "w") as filepaths_fhand:
         for fpath in fpaths:
-            filepaths_fhand.write(fpath+"\n")
+            filepaths_fhand.write(str(fpath)+"\n")
     return filepats_fpath
 
 

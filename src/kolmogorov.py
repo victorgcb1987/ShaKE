@@ -66,6 +66,7 @@ def create_expression_binary_file(in_filepath, units, exclude, out_fpath):
                     not_compressed_fhand.flush()
     return compressed
 
+
 def calculate_kolmogorov_estimator(filepath, universe_size, estimators, group=None, 
                                    sub=None, name=None, kind=None, units="TPM"):
     binary = "{}.binary".format(str(filepath))
