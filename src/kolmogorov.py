@@ -63,7 +63,7 @@ def create_kmer_binary_file(in_filepath, out_filepath, num_zeros):
                     not_compressed_fhand.flush()
     compressed = "{}.gz".format(out_filepath)
     if not Path(compressed).exists():
-        cmd = "gzip -c {} > {}"
+        cmd = "gzip -c {} > {}".format(out_filepath, compressed)
         run(cmd, shell=True)
     return compressed
 
