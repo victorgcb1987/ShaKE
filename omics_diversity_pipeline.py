@@ -338,7 +338,8 @@ def main():
                                                         sub=sub, name=name, kind=features["kind"], file=features["file"], 
                                                         pipe=True, binary=arguments["presence"])
                     calculate_kolmogorov_estimator(features["file"], universe_size, results, group=group, 
-                                                    sub=sub, name=name, kind=features["kind"], units="TPM")
+                                                    sub=sub, name=name, kind=features["kind"], units="TPM",
+                                                    presence=arguments["presence"])
                         
     with open(arguments["output"] / "file_manifiest.tsv", "w") as manifiest_fhand:
         manifiest_fhand.write("Group\tSubgroup\tRep\tKind\"File\n")

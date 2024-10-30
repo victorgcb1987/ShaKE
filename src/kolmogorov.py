@@ -27,7 +27,9 @@ def get_universe_size_difference(filepath, universe_size):
     return universe_size - get_universe_size([filepath])
 
 
-def convert_to_binary(number):
+def convert_to_binary(number, presence=False):
+    if presence:
+        return format(1, '02b')
     return format(int(number), '030b')
 
 
@@ -50,16 +52,19 @@ def convert_to_binary(number):
 #     return compressed
 
 
-def create_kmer_binary_file(in_filepath, out_filepath, num_zeros):
+def create_kmer_binary_file(in_filepath, out_filepath, num_zeros, presence=False):
     if not Path(out_filepath).exists():
         with open(out_filepath, "w") as not_compressed_fhand:
             with open(in_filepath) as in_fhand:
-                generator = (convert_to_binary(line.rstrip().split()[1]) for line in in_fhand)
+                generator = (convert_to_binary(line.rstrip().split()[1], presence=presence) for line in in_fhand)
                 for gen in generator:
                     not_compressed_fhand.write(gen+"\n")
                     not_compressed_fhand.flush()
                 for zero in range(num_zeros):
-                    not_compressed_fhand.write(format(0, '030b')+"\n")
+                    if presence:
+                        not_compressed_fhand.write(format(0, '02b')+"\n")
+                    else:
+                        not_compressed_fhand.write(format(0, '030b')+"\n")
                     not_compressed_fhand.flush()
     compressed = "{}.gz".format(out_filepath)
     if not Path(compressed).exists():
@@ -87,11 +92,14 @@ def create_expression_binary_file(in_filepath, units, exclude, out_fpath):
 
 
 def calculate_kolmogorov_estimator(filepath, universe_size, estimators, group=None, 
-                                   sub=None, name=None, kind=None, units="TPM"):
-    binary = "{}.binary".format(str(filepath))
+                                   sub=None, name=None, kind=None, units="TPM", presence=False):
+    if presence:
+        binary = "{}.presence.binary".format(str(filepath))
+    else:
+        binary = "{}.binary".format(str(filepath))
     if kind != "expression":
         num_zeros = get_universe_size_difference(filepath, universe_size)
-        compressed_file = create_kmer_binary_file(filepath, binary, num_zeros)
+        compressed_file = create_kmer_binary_file(filepath, binary, num_zeros, presence=presence)
     else:
         compressed_file = create_expression_binary_file(filepath, units, [], binary)
     kolmo = calculate_kolmogorov(compressed_file, binary)
