@@ -66,6 +66,8 @@ def get_arguments():
     log_fname = Path(parser.output_dir) / logdate
     log_fhand = open(log_fname, "w")
     msg = "#Command Used: "+ " ".join(sys.argv)+"\n"
+    log_fhand.write(msg)
+    log_fhand.flush()
     msg = "#STEP 0: converting BAM files to fasta\n"
     print(msg)
     log_fhand.write(msg)
