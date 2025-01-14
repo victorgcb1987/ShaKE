@@ -267,16 +267,16 @@ def main():
                     with open(results["out_fpath"]) as fhand:
                         hetkmers = [(line.rstrip().split()[1], line.split()[0]) for line in fhand]
                     with open(values["file"]) as fhand:
-                        values = {line.split()[0]: int(line.rstrip().split()[1]) for line in fhand}
+                        values_ = {line.split()[0]: int(line.rstrip().split()[1]) for line in fhand}
                     #union-find algorithm
-                    unique_elements = set(values.keys())
+                    unique_elements = set(values_.keys())
                     for hetkmer in hetkmers:
                         unique_elements.update(hetkmer)
                     uf = UnionFind(unique_elements)
                     for hetkmer in hetkmers:
                         uf.join(hetkmer[0], hetkmer[1])
                     groups = {}
-                    for seq, value in values.items():
+                    for seq, value in values_.items():
                         representative = uf.find(seq)
                         if representative in groups:
                             groups[representative] += value
