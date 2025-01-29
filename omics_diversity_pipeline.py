@@ -92,7 +92,7 @@ def get_arguments():
                         if parser.exclude:
                             msg = "Excluding reads from bed file"
                             log_fhand.write(msg+"\n")
-                            results = filter_bam_file(file, Path(parser.output_dir), parser.exclude, parser.num_threads)
+                            results = filter_bam_file(Path(file), Path(parser.output_dir), parser.exclude, parser.num_threads)
                             log = check_run(results)
                             log_fhand.write(log+"\n")
                             log_fhand.flush()
