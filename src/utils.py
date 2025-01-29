@@ -140,3 +140,19 @@ def convert_bam_to_fasta(bam_fpath, out_fdir, threads=1):
                    "msg": run_.stderr.decode(), "out_fpath": fasta_fpath}
     return results
 
+def filter_bam_file(bam_fpath, out_fdir, bed_fpath, threads=1):
+    included_bam = out_fdir / "{}.reads_to_analyze.bam".format(bam_fpath.name)
+    excluded_bam = out_fdir / "{}.excluded_reads.bam".format(bam_fpath.name)
+    cmd = "samtools view -b -L {} -@ {} -U {} {} > {}".format(bed_fpath, threads,
+                                                              included_bam, bam_fpath,
+                                                              excluded_bam)
+    if included_bam.exists():
+        results = {"command": cmd, "returncode": 99,
+                   "msg": "output file exists already", 
+                   "out_fpath": Path(included_bam)}
+    else:
+        run_ = run(cmd, shell=True, capture_output=True)
+        results = {"command": cmd, "returncode": run_.returncode,
+                   "msg": run_.stderr.decode(), "out_fpath": Path(included_bam)}
+    return results
+    

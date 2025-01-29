@@ -11,7 +11,7 @@ from subprocess import run
 from src.kmc import (count_kmers, create_input_file, create_kmer_histogram, 
                      calculate_cutoffs, dump_kmer_counts, calculate_hetkmers)
 from src.kolmogorov import calculate_kolmogorov_estimator
-from src.utils import check_run, sequence_kind, UnionFind, get_universe_size, convert_bam_to_fasta
+from src.utils import check_run, sequence_kind, UnionFind, get_universe_size, convert_bam_to_fasta, filter_bam_file
 from src.kmer import calculate_sample_shannon_estimators
 from src.expression import calculate_sample_estimators as expression_diversity
 
@@ -44,6 +44,10 @@ def parse_arguments():
     parser.add_argument("--merge_universe", "-m",
                         help=help_universe, default=False,
                         action="store_true")
+    help_exclude = "(optional) Bed file with regions to exclude"
+    parser.add_argument("--exclude", "-e",
+                        help=help_exclude, type=str,
+                        default="")
     help_presence = "(optional) change diversity calculation to presence/absence"
     parser.add_argument("--presence", "-p",
                         help=help_presence, default=False,
@@ -85,6 +89,15 @@ def get_arguments():
                 checked_files = []
                 for file in files:
                     if sequence_kind(file) == "bam":
+                        if parser.exclude:
+                            msg = "Excluding reads from bed file"
+                            log_fhand.write(msg+"\n")
+                            results = filter_bam_file(file, Path(parser.output_dir), parser.exclude, parser.num_threads)
+                            log = check_run(results)
+                            log_fhand.write(log+"\n")
+                            log_fhand.flush()
+                            print(log)
+                            file = results["out_fpath"]
                         results = convert_bam_to_fasta(Path(file), Path(parser.output_dir), parser.num_threads)
                         log = check_run(results)
                         log_fhand.write(log+"\n")
