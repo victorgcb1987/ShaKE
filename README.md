@@ -47,7 +47,9 @@ This pipeline can be run with `omics_diversity_pipeline.py`and it accepts the fo
   
   `--presence, -p` (Optional, False by default) switchs change diversity calculation to presence/absence, counting all kmer count values to 1 if is present. For expression tables, a gene will throw a value of 1 if a gene has a TPM of 1 or more or 0 if its less than 1. 
 
-  ### Output
+  ## Output
+
+  ### Diversity results
 
   Shake will generate a table called `results.tsv` inside the directory specified with the `--output_dir` argument. This table has the following format:
 
@@ -70,3 +72,15 @@ This pipeline can be run with `omics_diversity_pipeline.py`and it accepts the fo
   
   `Kolmogorov`: is Kolmogorov complexity measurement. Is an alternative measurement for Shannon Diversity Index that reduces the impact of K-mers exclusive to unique datasets from the same group.
 
+  ### File Manifiest
+  Other file found in output dir will be `file_manifiest.tsv`with the following format:
+
+  | Group      | Subgroup | Rep            | Kind         | File                              |
+|------------|----------|----------------|--------------|-----------------------------------|
+| ERR3333388 | R        | ERR3333388_R1  | transcriptome| ERR3333388_q30l50_R1.fastq.gz     |
+| ERR3333388 | R        | ERR3333388_R1  | transcriptome| ERR3333388_q30l50_R2.fastq.gz     |
+| ERR3333389 | R        | ERR3333389_R1  | transcriptome| ERR3333389_q30l50_R1.fastq.gz     |
+| ERR3333389 | R        | ERR3333389_R1  | transcriptome| ERR3333389_q30l50_R2.fastq.gz     |
+| ERR3333390 | R        | ERR3333390_R1  | transcriptome| ERR3333390_q30l50_R1.fastq.gz     |
+
+Is just an inventory of dataset filenames used for each Group defined in the file of files provided to Shake by the user
