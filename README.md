@@ -10,8 +10,11 @@ clone KATULU respository: `git clone https://github.com/victorgcb1987/ShaKE.git`
 
 ## How to use 
 
-### Omics diversity calculator
 SHake is a pipeline that will calculate Shannon diversity index for files of your choice. These file can be fasta/fastq files or gene expression files like the ones provided by stringtie.
+
+Use example `SHaKE.py -i fof.SHaKE.txt -o example_dir -r 128 -t 40 -k 21`
+
+### File of Files
 
 In order to runt this program you will need to prepare a file with table similar to this one:
 
@@ -32,7 +35,9 @@ Fourth and fifth column are the minimun and the maximum values cutoff in order t
 
 Sixth column is the filepaths column, you can separate different files with a comma.
 
-This pipeline can be run with `SHake.py`and it accepts the following arguments:
+### Arguments
+
+`SHake` accepts the following arguments:
 
   `--input_file INPUT_FILE, -i INPUT_FILE` (Required): the path to the table previously described
   
@@ -48,7 +53,6 @@ This pipeline can be run with `SHake.py`and it accepts the following arguments:
   
   `--presence, -p` (Optional, False by default) switchs change diversity calculation to presence/absence, counting all kmer count values to 1 if is present. For expression tables, a gene will throw a value of 1 if a gene has a TPM of 1 or more or 0 if its less than 1. 
 
-  Use example `SHaKE.py -i fof.SHaKE.txt -o example_dir -r 128 -t 40 -k 21`
 
   ## Output
 
