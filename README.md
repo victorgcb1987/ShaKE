@@ -90,4 +90,4 @@ Sixth column is the filepaths column, you can separate different files with a co
 | ERR3333389 | R        | ERR3333389_R1  | transcriptome| ERR3333389_q30l50_R2.fastq.gz     |
 | ERR3333390 | R        | ERR3333390_R1  | transcriptome| ERR3333390_q30l50_R1.fastq.gz     |
 
-Is just an inventory of dataset filenames used for each Group defined in the file of files provided to Shake by the user
+Is just an inventory of dataset filenames used for each Group defined in the file of files provided to Shake by the user.
