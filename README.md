@@ -48,7 +48,7 @@ This pipeline can be run with `SHake.py`and it accepts the following arguments:
   
   `--presence, -p` (Optional, False by default) switchs change diversity calculation to presence/absence, counting all kmer count values to 1 if is present. For expression tables, a gene will throw a value of 1 if a gene has a TPM of 1 or more or 0 if its less than 1. 
 
-  Use example `SHaKE.py -i fof.SHaKE.txt -o test -r 128 -t 40 -k 21`
+  Use example `SHaKE.py -i fof.SHaKE.txt -o example_dir -r 128 -t 40 -k 21`
 
   ## Output
 
