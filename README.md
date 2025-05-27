@@ -61,8 +61,12 @@ This pipeline can be run with `omics_diversity_pipeline.py`and it accepts the fo
 
 
   `Group , Subgroup, Rep and Kind` have the values provided by the user in the file of files.
+  
   `Subgroup_Universe_Size` is the number of unique K-mers found in the dataset.
+  
   `Diversity_log2 and Diversity_log10` is the Shannon Diversity Index score calculated to for each dataset, using log2 and log10.
+  
   `Specificty_log2 and Specifity_log10`is the K-mer specifity of each dataset. A specifity value of 0 means that each kind of K-mer is equally represented in a given dataset and higher values means that some K-mers are overrepresented. Specificty is calculated for log2 and log10.
+  
   `Kolmogorov`
 
