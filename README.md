@@ -1,4 +1,4 @@
-# Shake - Shannon diversity on K-mers and gene Expression
+# SHake - SHannon diversity on K-mers and gene Expression
 
 ## Requirements
 
@@ -11,7 +11,7 @@ clone KATULU respository: `git clone https://github.com/victorgcb1987/ShaKE.git`
 ## How to use 
 
 ### Omics diversity calculator
-Omics diversity calculator is a pipeline that will calculate Shannon diversity index for files of your choice. These file can be fasta/fastq files or gene expression files like the ones provided by stringtie.
+SHake is a pipeline that will calculate Shannon diversity index for files of your choice. These file can be fasta/fastq files or gene expression files like the ones provided by stringtie.
 
 In order to runt this program you will need to prepare a file with table similar to this one:
 
@@ -32,7 +32,7 @@ Fourth and fifth column are the minimun and the maximum values cutoff in order t
 
 Sixth column is the filepaths column, you can separate different files with a comma.
 
-This pipeline can be run with `omics_diversity_pipeline.py`and it accepts the following arguments:
+This pipeline can be run with `SHake.py`and it accepts the following arguments:
 
   `--input_file INPUT_FILE, -i INPUT_FILE` (Required): the path to the table previously described
   
