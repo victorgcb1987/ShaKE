@@ -5,7 +5,7 @@
 
 kmc https://github.com/refresh-bio/KMC. You will need to add kmc binaries to PATH variable for example using `export PATH=$PATH:kmc/install/bin/`
 
-clone KATULU respository: `git clone https://github.com/victorgcb1987/KATULU.git`
+clone KATULU respository: `git clone https://github.com/victorgcb1987/ShaKE.git`
 
 ## How to use 
 
