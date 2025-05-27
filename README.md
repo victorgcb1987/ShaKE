@@ -47,3 +47,18 @@ This pipeline can be run with `omics_diversity_pipeline.py`and it accepts the fo
   
   `--presence, -p` (Optional, False by default) switchs change diversity calculation to presence/absence, counting all kmer count values to 1 if is present. For expression tables, a gene will throw a value of 1 if a gene has a TPM of 1 or more or 0 if its less than 1. 
 
+  ### Output
+
+  Shake will generate a table called `results.tsv` inside the directory specified with the `--output_dir` argument. This table has the following format:
+
+| Group      | Subgroup | Rep              | Kind         | Subgroup_Universe_Size | Diversity_log2 | Specifity_log2 | Diversity_log10 | Specifity_log10 | Kolmogorov         |
+|------------|----------|------------------|--------------|------------------------|----------------|----------------|------------------|------------------|---------------------|
+| ERR3333388 | R        | ERR3333388_R1    | transcriptome| 40072639               | 22.7620354967  | 2.4940786897   | 6.8520554469     | 0.7507924971     | 0.0636632271        |
+| ERR3333389 | R        | ERR3333389_R1    | transcriptome| 38691164               | 22.9552288052  | 2.2502719911   | 6.9102124277     | 0.6773993677     | 0.0648244898        |
+| ERR3333390 | R        | ERR3333390_R1    | transcriptome| 39507337               | 22.9614172079  | 2.2742000608   | 6.9120753225     | 0.6846024344     | 0.0653194914        |
+| ERR3333391 | R        | ERR3333391_R1    | transcriptome| 40188471               | 22.5576212642  | 2.7026570900   | 6.7905206314     | 0.8135808521     | 0.0647497717        |
+| ERR3333392 | R        | ERR3333392_R1    | transcriptome| 36116326               | 21.8123101535  | 3.2938376502   | 6.5661596309     | 0.9915439335     | 0.0630993513        |
+
+
+  **--Group , Subgroup, Rep and kind have the values provided by the user in the file of files
+
