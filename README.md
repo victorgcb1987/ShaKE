@@ -60,5 +60,9 @@ This pipeline can be run with `omics_diversity_pipeline.py`and it accepts the fo
 | ERR3333392 | R        | ERR3333392_R1    | transcriptome| 36116326               | 21.8123101535  | 3.2938376502   | 6.5661596309     | 0.9915439335     | 0.0630993513        |
 
 
-  **--Group , Subgroup, Rep and kind have the values provided by the user in the file of files
+  `Group , Subgroup, Rep and Kind` have the values provided by the user in the file of files.
+  `Subgroup_Universe_Size` is the number of unique K-mers found in the dataset.
+  `Diversity_log2 and Diversity_log10` is the Shannon Diversity Index score calculated to for each dataset, using log2 and log10.
+  `Specificty_log2 and Specifity_log10`is the K-mer specifity of each dataset. A specifity value of 0 means that each kind of K-mer is equally represented in a given dataset and higher values means that some K-mers are overrepresented. Specificty is calculated for log2 and log10.
+  `Kolmogorov`
 
