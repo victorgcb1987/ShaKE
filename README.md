@@ -1,3 +1,4 @@
+# Shake - Shannon diversity on K-mers and gene Expression
 
 ## Requirements
 
